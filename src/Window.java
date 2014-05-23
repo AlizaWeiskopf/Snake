@@ -4,27 +4,31 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-public class Window extends JFrame {
-
+class Window extends JFrame {
 	private static final long serialVersionUID = -2542001418764869760L;
-	private ArrayList<ArrayList<DataOfSquare>> grid;
-	private int width = 20;
-	private int height = 20;
+	public static ArrayList<ArrayList<DataOfSquare>> Grid;
+	public static int width = 20;
+	public static int height = 20;
 
 	public Window() {
 
+		setTitle("Snake");
+		setSize(300, 300);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		// Creates the arraylist that'll contain the threads
-		grid = new ArrayList<ArrayList<DataOfSquare>>();
+		Grid = new ArrayList<ArrayList<DataOfSquare>>();
 		ArrayList<DataOfSquare> data;
 
 		// Creates Threads and its data and adds it to the arrayList
 		for (int i = 0; i < width; i++) {
 			data = new ArrayList<DataOfSquare>();
 			for (int j = 0; j < height; j++) {
-				DataOfSquare c = new DataOfSquare(2);
+				DataOfSquare c = new DataOfSquare(0);
 				data.add(c);
 			}
-			grid.add(data);
+			Grid.add(data);
 		}
 
 		// Setting up the layout of the panel
@@ -34,7 +38,7 @@ public class Window extends JFrame {
 		// the panel
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				getContentPane().add(grid.get(i).get(j).square);
+				getContentPane().add(Grid.get(i).get(j).square);
 			}
 		}
 
@@ -45,7 +49,7 @@ public class Window extends JFrame {
 		// Let's start the game now..
 		c.start();
 
-		// Links the window to the keyboardlistener
+		// Links the window to the keyboardlistenner.
 		this.addKeyListener((KeyListener) new KeyboardListener());
 
 		// To do : handle multiplayers .. The above works, test it and see what
@@ -56,17 +60,4 @@ public class Window extends JFrame {
 		// c2.start();
 
 	}
-
-	public ArrayList<ArrayList<DataOfSquare>> getGrid() {
-		return grid;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
 }

@@ -1,20 +1,25 @@
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 //Controls all the game logic .. most important class in this project.
 public class ThreadsController extends Thread {
-	ArrayList<ArrayList<DataOfSquare>> squares = new ArrayList<ArrayList<DataOfSquare>>();
+	ArrayList<ArrayList<DataOfSquare>> Squares = new ArrayList<ArrayList<DataOfSquare>>();
 	Tuple headSnakePos;
 	int sizeSnake = 3;
-	long speed = 50;
+	long speed = 90;
+	int colorOfSnake = 2;// 2, 3, or 4
+	Window window;
 	public static int directionSnake;
 
 	ArrayList<Tuple> positions = new ArrayList<Tuple>();
 	Tuple foodPosition;
 
-	// Constructor of ControllerThread
+	// Constructor of ControlleurThread
 	public ThreadsController(Tuple positionDepart, Window window) {
+		this.window = window;
 		// Get all the threads
-		squares = window.getGrid();
+		Squares = Window.Grid;
 
 		headSnakePos = new Tuple(positionDepart.x, positionDepart.y);
 		directionSnake = 1;
@@ -23,7 +28,7 @@ public class ThreadsController extends Thread {
 		Tuple headPos = new Tuple(headSnakePos.getX(), headSnakePos.getY());
 		positions.add(headPos);
 
-		foodPosition = new Tuple(window.getHeight() - 1, window.getWidth() - 1);
+		foodPosition = new Tuple(Window.height - 1, Window.width - 1);
 		spawnFood(foodPosition);
 
 	}
@@ -32,15 +37,20 @@ public class ThreadsController extends Thread {
 	public void run() {
 		while (true) {
 			moveInterne(directionSnake);
-			checkCollision();
+			try {
+				checkCollision();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			moveExterne();
 			deleteTail();
-			pauser();
+			pause();
 		}
 	}
 
 	// delay between each move of the snake
-	private void pauser() {
+	private void pause() {
 		try {
 			sleep(speed);
 		} catch (InterruptedException e) {
@@ -49,7 +59,7 @@ public class ThreadsController extends Thread {
 	}
 
 	// Checking if the snake bites itself or is eating
-	private void checkCollision() {
+	private void checkCollision() throws InterruptedException {
 		Tuple posCritique = positions.get(positions.size() - 1);
 		for (int i = 0; i <= positions.size() - 2; i++) {
 			boolean biteItself = posCritique.getX() == positions.get(i).getX()
@@ -64,27 +74,38 @@ public class ThreadsController extends Thread {
 		if (eatingFood) {
 			System.out.println("Yummy!");
 			sizeSnake = sizeSnake + 1;
-			foodPosition = getValAleaNotInSnake();
+			foodPosition = getValidAreaNotInSnake();
 
 			spawnFood(foodPosition);
 		}
 	}
 
 	// Stops The Game
-	private void stopTheGame() {
-		System.out.println("COLISION! \n");
+	private void stopTheGame() throws InterruptedException {
+		System.out.println("COLLISION! \n");
+		String answer = JOptionPane
+				.showInputDialog("Do you want to start a new game? Y or N");
+		String choice = answer.toUpperCase();
+		if (choice.equals("N")) {
+			System.exit(0);
+		} else {
+			window.setVisible(false);
+			Window newGame = new Window();
+			newGame.setVisible(true);
+
+		}
 		while (true) {
-			pauser();
+			sleep(1000);
 		}
 	}
 
 	// Put food in a position and displays it
 	private void spawnFood(Tuple foodPositionIn) {
-		squares.get(foodPositionIn.x).get(foodPositionIn.y).lightMeUp(1);
+		Squares.get(foodPositionIn.x).get(foodPositionIn.y).lightMeUp(1);
 	}
 
 	// return a position not occupied by the snake
-	private Tuple getValAleaNotInSnake() {
+	private Tuple getValidAreaNotInSnake() {
 		Tuple p;
 		int ranX = 0 + (int) (Math.random() * 19);
 		int ranY = 0 + (int) (Math.random() * 19);
@@ -141,8 +162,12 @@ public class ThreadsController extends Thread {
 		for (Tuple t : positions) {
 			int y = t.getX();
 			int x = t.getY();
-			squares.get(x).get(y).lightMeUp(0);
-
+			if (colorOfSnake == 2 || colorOfSnake == 3) {
+				Squares.get(x).get(y).lightMeUp(colorOfSnake++);
+			} else {
+				Squares.get(x).get(y).lightMeUp(colorOfSnake);
+				colorOfSnake = 2;
+			}
 		}
 	}
 
@@ -154,7 +179,7 @@ public class ThreadsController extends Thread {
 		for (int i = positions.size() - 1; i >= 0; i--) {
 			if (cmpt == 0) {
 				Tuple t = positions.get(i);
-				squares.get(t.y).get(t.x).lightMeUp(2);
+				Squares.get(t.y).get(t.x).lightMeUp(0);
 			} else {
 				cmpt--;
 			}

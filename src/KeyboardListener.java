@@ -4,13 +4,16 @@ import java.awt.event.KeyEvent;
 public class KeyboardListener extends KeyAdapter {
 
 	public void keyPressed(KeyEvent e) {
+
 		switch (e.getKeyCode()) {
+
 		case KeyEvent.VK_RIGHT:
 			// if it's not the opposite direction
 			if (ThreadsController.directionSnake != 2) {
 				ThreadsController.directionSnake = 1;
 			}
 			break;
+
 		case KeyEvent.VK_UP:
 			if (ThreadsController.directionSnake != 4) {
 				ThreadsController.directionSnake = 3;
@@ -33,5 +36,4 @@ public class KeyboardListener extends KeyAdapter {
 			break;
 		}
 	}
-
 }
